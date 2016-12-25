@@ -13,19 +13,19 @@ namespace WcfEmployeeService.Interfaces
     public interface IEmployeeService
     {
         [OperationContract]
-        Response<Employee> AddEmployee(Employee value);
+        Response<HREmployee> AddEmployee(HREmployee value);
 
         [OperationContract]
-        Response<Employee> EditEmployee(string employeeId);
+        Response<HREmployee> EditEmployee(int employeeId);
 
         [OperationContract]
-        Response<Employee> DeleteEmployee(string employeeId);
+        Response<HREmployee> DeleteEmployee(int employeeId);
 
         [OperationContract]
-        Response<List<Employee>> GetAllEmployees();
+        Response<List<HREmployee>> GetAllEmployees();
 
         [OperationContract]
-        Response<Employee> GetEmployee(string employeeId);
+        Response<HREmployee> GetEmployee(int employeeId);
     }
 
 }

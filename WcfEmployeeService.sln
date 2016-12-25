@@ -5,26 +5,25 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfEmployeeService", "WcfService1\WcfEmployeeService.csproj", "{8DDE728A-1DF7-40D0-BDC6-01F822CD14ED}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "wcf-client", "http://localhost/wcf-client", "{7B19AD35-C37D-4F9D-9DE4-B27455696D86}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "EmployeeWCFClient(3)", "EmployeeWCFClient\", "{5FE0D51A-88D7-4E10-829F-AB16DDCEC9B4}"
 	ProjectSection(WebsiteProperties) = preProject
-		UseIISExpress = "false"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.2"
-		Debug.AspNetCompiler.VirtualPath = "/wcf-client"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\..\..\..\..\inetpub\wwwroot\wcf-client\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\wcf-client\"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_51792"
+		Debug.AspNetCompiler.PhysicalPath = "EmployeeWCFClient\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_51792\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/wcf-client"
-		Release.AspNetCompiler.PhysicalPath = "..\..\..\..\..\..\inetpub\wwwroot\wcf-client\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\wcf-client\"
+		Release.AspNetCompiler.VirtualPath = "/localhost_51792"
+		Release.AspNetCompiler.PhysicalPath = "EmployeeWCFClient\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_51792\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		SlnRelativePath = "..\..\..\..\..\..\inetpub\wwwroot\wcf-client\"
-		DefaultWebSiteLanguage = "Visual C#"
+		VWDPort = "51792"
+		SlnRelativePath = "EmployeeWCFClient\"
 	EndProjectSection
 EndProject
 Global
@@ -37,10 +36,10 @@ Global
 		{8DDE728A-1DF7-40D0-BDC6-01F822CD14ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DDE728A-1DF7-40D0-BDC6-01F822CD14ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DDE728A-1DF7-40D0-BDC6-01F822CD14ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7B19AD35-C37D-4F9D-9DE4-B27455696D86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B19AD35-C37D-4F9D-9DE4-B27455696D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7B19AD35-C37D-4F9D-9DE4-B27455696D86}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B19AD35-C37D-4F9D-9DE4-B27455696D86}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{5FE0D51A-88D7-4E10-829F-AB16DDCEC9B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FE0D51A-88D7-4E10-829F-AB16DDCEC9B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FE0D51A-88D7-4E10-829F-AB16DDCEC9B4}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FE0D51A-88D7-4E10-829F-AB16DDCEC9B4}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

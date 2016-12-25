@@ -1,37 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using WcfEmployeeService.Models;
+using WcfService1.Models;
 
 namespace WcfEmployeeService.Interfaces
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Single)]
     public class EmployeeService : IEmployeeService
     {
+        //TODO: Should be in a config
+        private static readonly string CONNECTION_STRING = @"server=DESKTOP-ISP57M6\SQLEXPRESS;database=EmployeeDB;user=hris;password=12345";
         //assume we have a database of employee
-        List<Employee> employees;
+        List<HREmployee> employees;
 
-        Response<Employee> IEmployeeService.AddEmployee(Employee value)
+        //TODO: Need to close the connection
+        SqlConnection sqlConnection;
+
+        Response<HREmployee> IEmployeeService.AddEmployee(HREmployee value)
         {
             //validate the input from client
-            bool valid = Employee.Validate(value);
+            bool valid = HREmployee.Validate(value);
 
-            Response<Employee> response = new Response<Employee>();
+            Response<HREmployee> response = new Response<HREmployee>();
             response.Success = valid;
             response.Message = "Try again.";
 
             if(employees == null)
             {
-                employees = new List<Employee>();
+                employees = new List<HREmployee>();
             }
 
             if (valid)
             {
                 //check if it's already exist
-                foreach (Employee em in employees)
+                foreach (HREmployee em in employees)
                 {
                     if (em.EmployeeId.Equals(value.EmployeeId))
                     {
@@ -42,22 +50,26 @@ namespace WcfEmployeeService.Interfaces
                 }
 
                 //safely add to datastore
-                //TODO: add to database.
-                employees.Add(value);
-                response.Success = true;
-                response.Message = "Successfully added the employee.";
-                response.Data = value;
+                //TODO: add to database. it does return a bool whether it's failed of not
+                bool success = CreateNewEmployeeToDB(value);
+                if (success)
+                {
+                    employees.Add(value);
+                    response.Success = true;
+                    response.Message = "Successfully added the employee.";
+                    response.Data = value;
+                }
             }
             
             //otherwise, invalid
             return response;
         }
 
-        Response<Employee> IEmployeeService.DeleteEmployee(string employeeId)
+        Response<HREmployee> IEmployeeService.DeleteEmployee(int employeeId)
         {
-            Response<Employee> response = new Response<Employee>();
+            Response<HREmployee> response = new Response<HREmployee>();
 
-            if(employeeId == null || employeeId.Equals(""))
+            if(employeeId == 0)
             {
                 //invalid employeeId, immediately return false
                 response.Success = false;
@@ -66,9 +78,9 @@ namespace WcfEmployeeService.Interfaces
 
             if(employees.Count > 0)
             {
-                foreach (Employee em in employees)
+                foreach (HREmployee em in employees)
                 {
-                    if (employeeId.Equals(em.EmployeeId))
+                    if (employeeId == em.EmployeeId)
                     {
                         //exist, can be deleted
                         //catch before deleting to be returned
@@ -92,24 +104,24 @@ namespace WcfEmployeeService.Interfaces
             return response;
         }
 
-        Response<Employee> IEmployeeService.EditEmployee(string employeeId)
+        Response<HREmployee> IEmployeeService.EditEmployee(int employeeId)
         {
             throw new NotImplementedException();
         }
 
-        Response<List<Employee>> IEmployeeService.GetAllEmployees()
+        Response<List<HREmployee>> IEmployeeService.GetAllEmployees()
         {
-            Response<List<Employee>> response = new Response<List<Employee>>();
+            Response<List<HREmployee>> response = new Response<List<HREmployee>>();
             response.Success = true;
             response.Message = "There you are!";
             response.Data = employees;
             return response;
         }
 
-        Response<Employee> IEmployeeService.GetEmployee(string employeeId)
+        Response<HREmployee> IEmployeeService.GetEmployee(int employeeId)
         {
-            Employee employee = GetEmployeeWith(employeeId);
-            Response<Employee> response = new Response<Employee>();
+            HREmployee employee = GetEmployeeWith(employeeId);
+            Response<HREmployee> response = new Response<HREmployee>();
             response.Success = (employee != null);
             response.Data = employee;
 
@@ -124,30 +136,64 @@ namespace WcfEmployeeService.Interfaces
             return response;
         }
 
-        private Employee GetEmployeeWith(string employeeId)
+        private HREmployee GetEmployeeWith(int employeeId)
         {
-            if (employeeId == null || employeeId.Equals(""))
+            if (employeeId == 0)
             {
                 //invalid employeeId, immediately return false
                 return null;
             }
 
-            if (employees.Count == 0)
+            return GetEmployeeFromDB(employeeId); ;
+        }
+
+        private bool CreateNewEmployeeToDB(HREmployee emp)
+        {
+            SqlConnection con = GetSqlConnection();
+
+            SqlCommand insert = new SqlCommand("insert into Employee(firstname, lastname, employee_id) values(@firstname, @lastname, @employee_id)", con);
+            //Direct SQL Command, refer to GetEmployeeFromDB for LINQ Usage
+            insert.Parameters.AddWithValue("@firstname", emp.FirstName);
+            insert.Parameters.AddWithValue("@lastname", emp.LastName);
+            insert.Parameters.AddWithValue("@employee_id", emp.EmployeeId);
+            //execute and get response, 1 if it's successful
+            int result = insert.ExecuteNonQuery();
+            
+            //1 is insert command successful
+            return (result == 1);
+        }
+
+        private Models.HREmployee GetEmployeeFromDB(int employeeId)
+        {
+            SqlConnection con = GetSqlConnection();
+            SqlCommand command = new SqlCommand("select * from Employee where employee_id = @employeeId", con);
+            command.Parameters.AddWithValue("@employeeId", employeeId);
+            command.ExecuteNonQuery();
+
+            EmployeeContext ctx = new EmployeeContext();
+            //with LINQ
+            var employeeEntity = (from p in ctx.Employees where p.employee_id == employeeId select p).FirstOrDefault();
+
+            Models.HREmployee newEmp = new Models.HREmployee();
+            newEmp.EmployeeId = employeeEntity.employee_id;
+            newEmp.FirstName = employeeEntity.firstname;
+            newEmp.LastName = employeeEntity.lastname;
+           
+            return newEmp;
+        }
+
+        private SqlConnection GetSqlConnection()
+        {
+            //no need to create a new one if it's already exist.
+            if (sqlConnection == null)
             {
-                //empty, so nothing to delete
-                return null;
+                sqlConnection = new SqlConnection();
+                sqlConnection.ConnectionString = CONNECTION_STRING;
+                sqlConnection.Open();
             }
 
-            foreach (Employee em in employees)
-            {
-                if (employeeId.Equals(em.EmployeeId))
-                {
-                    //here it is
-                    return em;
-                }
-            }
-
-            return null;
+            //where to close???
+            return sqlConnection;
         }
     }
 }   
